@@ -1,43 +1,9 @@
+open Lib;
+
 Js.Date.now() |> int_of_float |> Random.init;
-
-exception Outofrange;
-
-type cell =
-  | Low
-  | High;
-
-let intOfCell =
-  fun
-  | Low => 0
-  | High => 1;
-
-let cellOfInt =
-  fun
-  | 0 => Low
-  | 1 => High
-  | _ => raise(Outofrange);
-
-let charOfCell =
-  fun
-  | Low => "."
-  | High => "@";
-
-let randomCell = () => Random.bool() ? High : Low;
 
 let getCell = (cells, index) =>
   0 <= index && index < Array.length(cells) ? cells[index] : Low;
-
-let bitshift_left: (int, int) => int = [%bs.raw "(a,b)=>a<<b"];
-let (<<) = bitshift_left;
-
-let bitwise_or: (int, int) => int = [%bs.raw "(a,b)=>a|b"];
-let (|||) = bitwise_or;
-
-let bitwise_and: (int, int) => int = [%bs.raw "(a,b)=>a&b"];
-let (&) = bitwise_and;
-
-let bitwise_xor: (int, int) => int = [%bs.raw "(a,b)=>a^b"];
-let (|^|) = bitwise_xor;
 
 let compute = (rule, output, input) => {
   let len = Array.length(input) - 1;
