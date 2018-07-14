@@ -15,19 +15,6 @@ let compute = (cells, rule) =>
        rule[a ||| (b << 1) ||| (c << 2)];
      });
 
-let z = (b, n) => (n & (1 << b)) == 0 ? Low : High;
-
-let makeRule = n => [|
-  n |> z(0),
-  n |> z(1),
-  n |> z(2),
-  n |> z(3),
-  n |> z(4),
-  n |> z(5),
-  n |> z(6),
-  n |> z(7),
-|];
-
 /* wolfram rule #110 */
 /* let ruleNumber = abs(int_of_float(Js.Date.now())) mod 256; */
 let ruleNumber = 122;
