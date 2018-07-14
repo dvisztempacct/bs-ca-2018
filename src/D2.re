@@ -23,9 +23,6 @@ let rule = ruleNumber |. makeRule;
 
 let w = 80;
 
-let logCells = cells =>
-  cells |> Array.map(charOfCell) |> Array.fold_left((++), "") |> Js.log;
-
 let cells = [|w |. Array.init(_ => randomCell()), w |. Array.make(Low)|];
 
 let flip = ref(0);

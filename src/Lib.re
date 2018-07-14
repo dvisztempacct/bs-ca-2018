@@ -37,3 +37,6 @@ let (|^|) = bitwise_xor;
 let ruleBit = (n, b) => (n & 1 << b) == 0 ? Low : High;
 
 let makeRule = n => Array.init(8, ruleBit(n));
+
+let logCells = cells =>
+  cells |> Array.map(charOfCell) |> Array.fold_left((++), "") |> Js.log;
