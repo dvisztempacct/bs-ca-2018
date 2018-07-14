@@ -34,15 +34,6 @@ let (&) = bitwise_and;
 let bitwise_xor: (int, int) => int = [%bs.raw "(a,b)=>a^b"];
 let (|^|) = bitwise_xor;
 
-let ruleBit = (b, n) => (n & 1 << b) == 0 ? Low : High;
+let ruleBit = (n, b) => (n & 1 << b) == 0 ? Low : High;
 
-let makeRule = n => [|
-  n |> ruleBit(0),
-  n |> ruleBit(1),
-  n |> ruleBit(2),
-  n |> ruleBit(3),
-  n |> ruleBit(4),
-  n |> ruleBit(5),
-  n |> ruleBit(6),
-  n |> ruleBit(7),
-|];
+let makeRule = n => Array.init(8, ruleBit(n));
