@@ -15,28 +15,28 @@ let calcCell = (x, i) => {
 let solidConeLog = (x, i) => {
   let w = x |> Array.length;
   writeSpace(i);
-  for (i in i to w-i-1) {
+  for (i in i to w - i - 1) {
     x[i] |. charOfCell |. write;
   };
   writeSpace(i);
-  write("\n")
+  write("\n");
 };
 
 let hollowConeLog = (x0, x1) => {
   let w = x0 |> Array.length;
   let half = w / 2;
-  for (i in 0 to half-1) {
+  for (i in 0 to half - 1) {
     writeSpace(i);
     oddSelect(i, x0, x1)[i] |. charOfCell |. write;
-    writeSpace(w-i*2-2);
-    oddSelect(i, x0, x1)[w-i-1] |. charOfCell |. write;
+    writeSpace(w - i * 2 - 2);
+    oddSelect(i, x0, x1)[w - i - 1] |. charOfCell |. write;
     writeSpace(i);
-    write("\n")
-  }
+    write("\n");
+  };
 };
 
 let rec bootCone = (x, y, i) => {
-  solidConeLog(x, i-1);
+  solidConeLog(x, i - 1);
   let w = x |. Array.length;
   let half = w / 2;
   if (i <= half) {
@@ -58,6 +58,6 @@ Js.log("lol");
 hollowConeLog(cells[0], cells[1]);
 
 /*
-cells[0] |. logCells;
-cells[1] |. logCells;
-*/
+ cells[0] |. logCells;
+ cells[1] |. logCells;
+ */
