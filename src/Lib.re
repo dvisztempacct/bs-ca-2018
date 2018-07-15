@@ -41,20 +41,18 @@ let makeRule = n => Array.init(8, ruleBit(n));
 let logCells = cells =>
   cells |> Array.map(charOfCell) |> Array.fold_left((++), "") |> Js.log;
 
-let write : string => unit = [%bs.raw "x=>process.stdout.write(x)"];
+let write: string => unit = [%bs.raw "x=>process.stdout.write(x)"];
 
-let writeSpace = i => {
-  for (_ in 1 to i)
-    write(" ")
-};
+let writeSpace = i =>
+  for (_ in 1 to i) {
+    write(" ");
+  };
 
 let oddSelect = (i, a, b) => i mod 2 == 0 ? a : b;
 
-[@bs.module "fs"]
-external readFileSync : string => Node.buffer = "";
+[@bs.module "fs"] external readFileSync : string => Node.buffer = "";
 
-[@bs.module "fs"]
-external writeFileSync : (string, string) => unit = "";
+[@bs.module "fs"] external writeFileSync : (string, string) => unit = "";
 
 exception BadCommand;
 
@@ -65,9 +63,8 @@ module Ansi = {
   let green = "\x1b[32m";
 };
 
-let charAtDefault = (default, str, i) => {
-  (0 <= i && i < String.length(str)) ? Js.String.charAt(i, str) : default;
-};
+let charAtDefault = (default, str, i) =>
+  0 <= i && i < String.length(str) ? Js.String.charAt(i, str) : default;
 
 let divRoundUp = (n, d) => n / d + (n mod d == 0 ? 0 : 1);
 
@@ -76,8 +73,8 @@ let arrayChunk = (w, a) =>
     a |. Belt.Array.slice(~offset=i * w, ~len=w)
   );
 
-  let arrayGetDefault = (~x, ~d, i) =>
-    0 <= i && i < Array.length(x) ? x[i] : d;
+let arrayGetDefault = (~x, ~d, i) =>
+  0 <= i && i < Array.length(x) ? x[i] : d;
 
 module Slice = {
   /* TODO hide */
@@ -87,31 +84,37 @@ module Slice = {
     len: int,
   };
   let make = (a, start, len) => {
-    if (0 > start || Array.length(a) < start + len)
+    if (0 > start || Array.length(a) < start + len) {
       raise(Outofrange);
-    { a, start, len }
+    };
+    {a, start, len};
   };
-  let getOpt = (s, i) => {
-    0 <= i && i < s.len ? Some(s.a[s.start + i]) : None
-  };
-  let getExn = (s, i) => {
+  let makeWhole = a => make(a, 0, a |. Array.length);
+  let getOpt = (s, i) => 0 <= i && i < s.len ? Some(s.a[s.start + i]) : None;
+  let getExn = (s, i) =>
     switch (getOpt(s, i)) {
     | Some(s) => s
     | None => raise(Outofrange)
-    }
-  };
-  let put = (s, i, x) => {
+    };
+  let put = (s, i, x) =>
     switch (getOpt(s, i)) {
-    | Some(_) => { s.a[s.start + i] = x; true }
+    | Some(_) =>
+      s.a[s.start + i] = x;
+      true;
     | None => false
-    }
-  };
+    };
   let putExn = (s, i, x) => put(s, i, x) ? () : raise(Outofrange);
 
-  let getDefault = (~s, ~d, i) => {
+  let getDefault = (~s, ~d, i) =>
     switch (getOpt(s, i)) {
     | Some(s) => s
     | None => d
-    }
-  };
+    };
+
+  let slice = (s, start, len) =>
+    0 <= start && start + len <= s.len ?
+      {a: s.a, start: s.start + start, len} : raise(Outofrange);
+
+  let chunksByLen = (s, len) =>
+    divRoundUp(s.len, len) |. Array.init(i => s |. slice(i * len, len));
 };
