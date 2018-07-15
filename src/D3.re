@@ -12,7 +12,7 @@ let calcCell = (x, i) => {
   rule[a ||| (b << 1) ||| (c << 2)];
 };
 
-let coneLog = (x, i) => {
+let solidConeLog = (x, i) => {
   let w = x |> Array.length;
   x
   |> Array.mapi((j, xj) => i <= j && j < w - i ? xj |. charOfCell : " ")
@@ -21,7 +21,7 @@ let coneLog = (x, i) => {
 };
 
 let rec bootCone = (x, y, i) => {
-  coneLog(x, i);
+  solidConeLog(x, i);
   let w = x |. Array.length;
   let half = w / 2;
   if (i <= half) {
