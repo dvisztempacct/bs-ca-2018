@@ -21,7 +21,7 @@ let solidConeLog = (x, i) => {
 };
 
 let rec bootCone = (x, y, i) => {
-  solidConeLog(x, i);
+  solidConeLog(x, i-1);
   let w = x |. Array.length;
   let half = w / 2;
   if (i <= half) {
@@ -29,7 +29,6 @@ let rec bootCone = (x, y, i) => {
       y[j] = calcCell(x, j);
     };
     bootCone(y, x, i + 1);
-    ();
   } else {
     ();
   };
