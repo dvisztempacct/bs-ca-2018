@@ -26,7 +26,7 @@ let cells = w |. Array.init(_ => randomCell()) |. ref;
 
 let steps = 2600;
 
-for (n in 1 to steps) {
+for (_ in 1 to steps) {
   cells^ |. logCells;
   cells := cells ^ |. compute(rule)
 };
