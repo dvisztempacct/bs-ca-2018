@@ -24,13 +24,13 @@ let solidConeLog = (x: Slice.t(cell), i) => {
 
 let hollowConeLog = (x0: Slice.t(cell), x1: Slice.t(cell)) => {
   let w = x0.len;
-  let half = w / 2;
-  for (i in 0 to half) {
+  let half = divRoundUp(w, 2);
+  for (i in 0 to half - 1) {
     writeSpace(i);
     oddSelect(i, x0, x1) |. Slice.getExn(i) |. charOfCell |. write;
     writeSpace(w - i * 2 - 2);
     if (w - i - 1 != i) {
-    oddSelect(i, x0, x1) |. Slice.getExn(w - i - 1) |. charOfCell |. write;
+      oddSelect(i, x0, x1) |. Slice.getExn(w - i - 1) |. charOfCell |. write;
     };
     writeSpace(i);
     write("\n");
@@ -51,25 +51,25 @@ let rec bootCone = (x: Slice.t(cell), y: Slice.t(cell), i) => {
   };
 };
 
-let w = 156;
-let nChunks = 4;
+let w = 175;
+let chunkSize = 40;
+let nChunks = divRoundUp(w, chunkSize);
 
 let cells =
   w
   * 2
   |. Array.init(_ => randomCell())
   |. Slice.makeWhole
-  |. Slice.chunksByLen(w / nChunks);
+  |. Slice.chunksByLen(chunkSize * 2)
+  |> Array.map(slice => slice |. Slice.chunksByCount(2));
 
-Js.log2("LOL=", cells |. Array.length);
+Js.log2("LOL=", cells[0][0].len);
 for (i in 0 to nChunks - 1) {
-  let i = i * 2;
-  bootCone(cells[i], cells[i + 1], 1);
+  bootCone(cells[i][0], cells[i][1], 1);
 };
 
 for (i in 0 to nChunks - 1) {
-  let i = i * 2;
-  hollowConeLog(cells[i], cells[i + 1]);
+  hollowConeLog(cells[i][0], cells[i][1]);
 };
 
 /*

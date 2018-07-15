@@ -84,7 +84,7 @@ module Slice = {
     len: int,
   };
   let make = (a, start, len) => {
-    if (0 > start || Array.length(a) < start + len) {
+    if (0 > start || 0 > len || Array.length(a) < start + len) {
       raise(Outofrange);
     };
     {a, start, len};
@@ -112,9 +112,20 @@ module Slice = {
     };
 
   let slice = (s, start, len) =>
-    0 <= start && start + len <= s.len ?
-      {a: s.a, start: s.start + start, len} : raise(Outofrange);
+    start >= 0 && len >= 0 && start + len <= s.len ?
+      make(s.a, s.start + start, len) : raise(Outofrange);
 
   let chunksByLen = (s, len) =>
-    divRoundUp(s.len, len) |. Array.init(i => s |. slice(i * len, len));
+    divRoundUp(s.len, len)
+    |. Array.init(i =>
+         s |. slice(i * len, Js.Math.min_int(len, s.len - i * len))
+       );
+
+  let chunksByCount = (s, num) => {
+    let len = s.len / num;
+    num
+    |. Array.init(i =>
+         s |. slice(i * len, Js.Math.min_int(len, s.len - i * len))
+       );
+  };
 };
