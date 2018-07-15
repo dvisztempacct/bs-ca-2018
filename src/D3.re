@@ -13,19 +13,19 @@ let calcCell = (x, i) => {
 };
 
 let coneLog = (x, i) => {
-  let len = x |> Array.length;
+  let w = x |> Array.length;
   x
-  |> Array.mapi((j, xj) => i <= j && j < len - i ? xj |. charOfCell : " ")
+  |> Array.mapi((j, xj) => i <= j && j < w - i ? xj |. charOfCell : " ")
   |> Array.fold_left((++), "")
   |> Js.log;
 };
 
 let rec bootCone = (x, y, i) => {
   coneLog(x, i);
-  let len = x |. Array.length;
-  let half = len / 2;
+  let w = x |. Array.length;
+  let half = w / 2;
   if (i <= half) {
-    for (j in i to len - i - 1) {
+    for (j in i to w - i - 1) {
       y[j] = calcCell(x, j);
     };
     bootCone(y, x, i + 1);

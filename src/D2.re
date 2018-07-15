@@ -6,8 +6,8 @@ let getCell = (cells, index) =>
   0 <= index && index < Array.length(cells) ? cells[index] : Low;
 
 let compute = (rule, output, input) => {
-  let len = Array.length(input) - 1;
-  for (index in 0 to len) {
+  let w = Array.length(input) - 1;
+  for (index in 0 to w) {
     let a = index - 1 |> getCell(input) |. intOfCell;
     let b = index - 0 |> getCell(input) |. intOfCell;
     let c = index + 1 |> getCell(input) |. intOfCell;
