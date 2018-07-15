@@ -53,6 +53,9 @@ let oddSelect = (i, a, b) => i mod 2 == 0 ? a : b;
 [@bs.module "fs"]
 external readFileSync : string => Node.buffer = "";
 
+[@bs.module "fs"]
+external writeFileSync : (string, string) => unit = "";
+
 exception BadCommand;
 
 module Ansi = {
@@ -64,4 +67,51 @@ module Ansi = {
 
 let charAtDefault = (default, str, i) => {
   (0 <= i && i < String.length(str)) ? Js.String.charAt(i, str) : default;
+};
+
+let divRoundUp = (n, d) => n / d + (n mod d == 0 ? 0 : 1);
+
+let arrayChunk = (w, a) =>
+  Array.init(divRoundUp(Array.length(a), w), i =>
+    a |. Belt.Array.slice(~offset=i * w, ~len=w)
+  );
+
+  let arrayGetDefault = (~x, ~d, i) =>
+    0 <= i && i < Array.length(x) ? x[i] : d;
+
+module Slice = {
+  /* TODO hide */
+  type t('a) = {
+    a: array('a),
+    start: int,
+    len: int,
+  };
+  let make = (a, start, len) => {
+    if (0 > start || Array.length(a) < start + len)
+      raise(Outofrange);
+    { a, start, len }
+  };
+  let getOpt = (s, i) => {
+    0 <= i && i < s.len ? Some(s.a[s.start + i]) : None
+  };
+  let getExn = (s, i) => {
+    switch (getOpt(s, i)) {
+    | Some(s) => s
+    | None => raise(Outofrange)
+    }
+  };
+  let put = (s, i, x) => {
+    switch (getOpt(s, i)) {
+    | Some(_) => { s.a[s.start + i] = x; true }
+    | None => false
+    }
+  };
+  let putExn = (s, i, x) => put(s, i, x) ? () : raise(Outofrange);
+
+  let getDefault = (~s, ~d, i) => {
+    switch (getOpt(s, i)) {
+    | Some(s) => s
+    | None => d
+    }
+  };
 };
