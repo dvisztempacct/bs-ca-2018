@@ -138,7 +138,12 @@ module Canvas = {
     h: int,
     x: Slice.t(char),
   };
-  let make = (w, h) => {w, h, x: Array.make(w * h, ' ') |. Slice.makeWhole};
+  let init = (w, h, f) => {
+    w,
+    h,
+    x: Array.init(w * h, f) |. Slice.makeWhole,
+  };
+  let make = (w, h) => init(w, h, _ => ' ');
   let devNull = [|' '|] |. Slice.makeWhole;
   let calcIndex = (c, x, y) => c.w * y + x;
   let boundsCheck = (c, x, y) => 0 <= x && x < c.w && 0 <= y && y < c.h;
