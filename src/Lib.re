@@ -57,10 +57,21 @@ let oddSelect = (i, a, b) => i mod 2 == 0 ? a : b;
 exception BadCommand;
 
 module Ansi = {
+  type color =
+    | None
+    | Gray
+    | Red
+    | Green;
   let reset = "\x1b[0m";
   let gray = "\x1b[30;1m";
   let red = "\x1b[31m";
   let green = "\x1b[32m";
+  let stringOfColor =
+    fun
+    | None => reset
+    | Gray => gray
+    | Red => red
+    | Green => green;
 };
 
 let charAtDefault = (default, str, i) =>
@@ -129,55 +140,6 @@ module Slice = {
        );
   };
 
+  /* XXX why? */
   let get = s => s.a;
-};
-
-module Canvas = {
-  type t = {
-    w: int,
-    h: int,
-    x: Slice.t(char),
-  };
-  let init = (w, h, f) => {
-    w,
-    h,
-    x: Array.init(w * h, f) |. Slice.makeWhole,
-  };
-  let make = (w, h) => init(w, h, _ => ' ');
-  let devNull = [|' '|] |. Slice.makeWhole;
-  let calcIndex = (c, x, y) => c.w * y + x;
-  let boundsCheck = (c, x, y) => 0 <= x && x < c.w && 0 <= y && y < c.h;
-  let getCharOpt = (c, x, y) =>
-    boundsCheck(c, x, y) ? Slice.getOpt(c.x, calcIndex(c, x, y)) : None;
-  let getCharExn = (c, x, y) =>
-    switch (getCharOpt(c, x, y)) {
-    | Some(x) => x
-    | None => raise(Outofrange)
-    };
-  let putBool = (c, x, y, v) => {
-    Js.log3("putBool", x, y);
-    if (boundsCheck(c, x, y)) {
-      Slice.put(c.x, calcIndex(c, x, y), v);
-    } else {
-      false;
-    };
-  };
-  let putExn = (c, x, y, v) => putBool(c, x, y, v) ? () : raise(Outofrange);
-  let putGen = (c, x, y, n, f) =>
-    for (i in 0 to n - 1) {
-      f(i) |> putExn(c, x, y);
-    };
-  let putStrBool = (c, x, y, v) =>
-    for (i in 0 to String.length(v) - 1) {
-      c |. putBool(x + i, y, v.[i]) |> ignore;
-    };
-  let stringOfCanvas = c =>
-    Slice.chunksByLen(c.x, c.w)
-    |> Array.map(row =>
-         row
-         |> Slice.get
-         |> Array.map(c => c |> String.make(1))
-         |> Js.Array.joinWith("")
-       )
-    |> Js.Array.joinWith("\n");
 };
