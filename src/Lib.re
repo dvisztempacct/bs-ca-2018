@@ -140,6 +140,5 @@ module Slice = {
        );
   };
 
-  /* XXX why? */
-  let get = s => s.a;
+  let get = s => s.a |> Belt.Array.slice(~offset=s.start, ~len=s.len);
 };
