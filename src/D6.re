@@ -23,28 +23,25 @@ let calcCell = (x: Slice.t(cell), i) => {
   rule[a ||| (b << 1) ||| (c << 2)];
 };
 
+/* draws a single line */
 let solidConeLog = (x: Slice.t(cell), c:Canvas.t, i) => {
   let w = x.len;
   let fn = i => x |. Slice.getExn(i) |. charOfCell;
   let l = forRange(fn, i, w - i);
-  let s = l |> List.fold_left((s, ch) => ch ++ s, "");
+  let s = l |> List.fold_left((s, ch) => s ++ ch, "");
   c |. Canvas.putDefaultStrClipped(i, i, s);
-  Js.log(c |. Canvas.stringOfCanvas);
 };
 
-let hollowConeLog = (x0: Slice.t(cell), x1: Slice.t(cell)) => {
+let hollowConeLog = (x0: Slice.t(cell), x1: Slice.t(cell), c:Canvas.t) => {
   let w = x0.len;
   let half = divRoundUp(w, 2);
-  for (i in 0 to half - 1) {
-    writeSpace(i);
-    oddSelect(i, x0, x1) |. Slice.getExn(i) |. charOfCell |. write;
-    writeSpace(w - i * 2 - 2);
+  let row = i => {
+    oddSelect(i, x0, x1) |. Slice.getExn(i) |. charOfCell |> Canvas.putDefaultStrClipped(c, i, i);
     if (w - i - 1 != i) {
-      oddSelect(i, x0, x1) |. Slice.getExn(w - i - 1) |. charOfCell |. write;
-    };
-    writeSpace(i);
-    write("\n");
+      oddSelect(i, x0, x1) |. Slice.getExn(w - i - 1) |. charOfCell |> Canvas.putDefaultStrClipped(c, w - i - 1, i);
+    }
   };
+  forRange(row, 0, half) |> ignore;
 };
 
 let rec bootCone = (x: Slice.t(cell), y: Slice.t(cell), c:Canvas.t, i) => {
@@ -73,16 +70,20 @@ let cells =
   |. Slice.chunksByLen(chunkSize * 2)
   |> Array.map(slice => slice |. Slice.chunksByCount(2));
 
-let newCanvas = () => Canvas.make(80, 25);
+let newCanvas = w => Canvas.make(w, divRoundUp(w, 2));
 
-Js.log2("LOL=", cells[0][0].len);
 for (i in 0 to nChunks - 1) {
-  let canvas = ref(newCanvas());
-  bootCone(cells[i][0], cells[i][1], canvas^, 1);
+  let cells = cells[i];
+  let canvas = newCanvas(cells[0].len);
+  bootCone(cells[0], cells[1], canvas, 1);
+  Js.log(canvas |. Canvas.stringOfCanvas);
 };
 
 for (i in 0 to nChunks - 1) {
-  hollowConeLog(cells[i][0], cells[i][1]);
+  let cells = cells[i];
+  let canvas = newCanvas(cells[0].len);
+  hollowConeLog(cells[0], cells[1], canvas);
+  Js.log(canvas |. Canvas.stringOfCanvas);
 };
 
 /*
