@@ -32,7 +32,6 @@ module Make = (Impl:Impl) => {
     | None => raise(Lib.Outofrange)
     };
   let putBool = (c, x, y, v) => {
-    Js.log3("putBool", x, y);
     if (boundsCheck(c, x, y)) {
       Slice.put(c.x, calcIndex(c, x, y), v);
     } else {
