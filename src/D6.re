@@ -1,13 +1,3 @@
-/* SEE TODO */
-/* SEE TODO */
-/* SEE TODO */
-/* SEE TODO */
-/* SEE TODO */
-/* SEE TODO */
-/* SEE TODO */
-/* SEE TODO */
-/* SEE TODO */
-/* SEE TODO */
 open Lib;
 module Canvas = Canvas.PlainTextCanvas;
 
