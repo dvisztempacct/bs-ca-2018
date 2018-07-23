@@ -20,6 +20,11 @@ let charOfCell =
   | Low => "."
   | High => "@";
 
+let actualCharOfCell =
+  fun
+  | Low => "."
+  | High => "@";
+
 let randomCell = () => Random.bool() ? High : Low;
 
 let bitshift_left: (int, int) => int = [%bs.raw "(a,b)=>a<<b"];
@@ -75,6 +80,13 @@ module Ansi = {
   let gray = "\x1b[30;1m";
   let red = "\x1b[31m";
   let green = "\x1b[32m";
+  let colorOfInt =
+    fun
+    | 0 => None
+    | 1 => Gray
+    | 2 => Red
+    | 3 => Green
+    | _ => raise(Outofrange);
   let stringOfColor =
     fun
     | None => reset

@@ -67,9 +67,11 @@ module PlainTextCanvas = Make({
   let rowToString = row => row |> Slice.get |> Array.map(String.make(1)) |> Js.Array.joinWith("");
 });
 
+type ansiColorCell = { color: Lib.Ansi.color, char: char };
+
 module AnsiColorCanvas = Make({
   module A = Lib.Ansi;
-  type cell = { color: A.color, char: char };
+  type cell = ansiColorCell;
   let defaultCell = { color: A.None, char: ' ' };
   let combineCellWithChar = (_cell, char) => { ..._cell, char };
   let charOfCell = x => x.char;
