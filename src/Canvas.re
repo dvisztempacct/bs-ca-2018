@@ -39,7 +39,7 @@ module Make = (Impl:Impl) => {
     };
   };
   let putExn = (c, x, y, v) => putBool(c, x, y, v) ? () : raise(Lib.Outofrange);
-  let putGen = (c, x, y, n, f) =>
+  let putGen = (c, x, y, ~n, ~f) =>
     for (i in 0 to n - 1) {
       f(i) |> putExn(c, x, y);
     };
