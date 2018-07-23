@@ -1,16 +1,3 @@
+I haven't written cellular automata in Ocaml yet, so.... here we go I guess.
 
-
-# Build
-```
-npm run build
-```
-
-# Watch
-
-```
-npm run watch
-```
-
-
-# Editor
-If you use `vscode`, Press `Windows + Shift + B` it will build automatically
+This is just a bunch of experiments and probably won't be useful to anyone.
