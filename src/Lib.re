@@ -50,6 +50,15 @@ let writeSpace = i =>
 
 let oddSelect = (i, a, b) => i mod 2 == 0 ? a : b;
 
+let rec forRange = (fn, a, z) =>
+  a < z ? [fn(a), ...forRange(fn, a + 1, z)] : [];
+
+let rec space = fun
+| 0 => ""
+| 1 => " "
+| n when n > 0 => space(n/2) ++ space(n/2+n mod 2)
+| _ => raise(Outofrange);
+
 [@bs.module "fs"] external readFileSync : string => Node.buffer = "";
 
 [@bs.module "fs"] external writeFileSync : (string, string) => unit = "";
