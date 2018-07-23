@@ -14,7 +14,8 @@
       // add your bs-dependencies here 
   ],
   "warnings": {
-    "error" : "+101"
+    // promot all warnings to errors
+    "error" : "A"
   },
   "refmt": 3
 }
