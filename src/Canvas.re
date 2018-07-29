@@ -75,5 +75,30 @@ module AnsiColorCanvas = Make({
   let defaultCell = { color: A.None, char: ' ' };
   let combineCellWithChar = (_cell, char) => { ..._cell, char };
   let charOfCell = x => x.char;
-  let rowToString = row => row |> Slice.get |> Array.map(x => A.stringOfColor(x.color) ++ String.make(1, x.char)) |> Js.Array.joinWith("");
+  let rowToString = row => row |> Slice.get |> Array.map(x => A.reset ++ A.stringOfColor(x.color) ++ String.make(1, x.char)) |> Js.Array.joinWith("");
 });
+
+/* diffs two `PlainTextCanvas.t`, producing an `AnsiColorCanvas.t` which colors
+ * characters green where it's matched between both inputs, bright black (gray)
+ * when one canvas has a space, and red when they differ */
+let specialDiff : (PlainTextCanvas.t, PlainTextCanvas.t) => AnsiColorCanvas.t = (a, b) => {
+  let w = Js.Math.max_int(a.w, b.w);
+  let h = Js.Math.max_int(a.h, b.h);
+  let c = AnsiColorCanvas.make(w*2, h);
+  for (y in 0 to h-1) {
+    for (x in 0 to w-1) {
+      let a = a |. PlainTextCanvas.getCellExn(x, y);
+      let b = b |. PlainTextCanvas.getCellExn(x, y);
+      let same = a == b;
+      let space = a == ' ' || b == ' ';
+      let char = a == ' ' ? b : a;
+      switch ((same, space)) {
+      | (_, true) => [| { char, color: Lib.Ansi.Gray } |]
+      | (true, _) => [|{ char, color: Lib.Ansi.Green } |]
+      | (false, _) => [| { char: a, color: Lib.Ansi.Red }, { char: b, color: Lib.Ansi.BlackOnRed } |]
+      }
+      |> Array.iteri((i, ch) => AnsiColorCanvas.putExn(c, x*2+i, y, ch));
+    }
+  };
+  c
+};

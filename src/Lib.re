@@ -75,24 +75,32 @@ module Ansi = {
     | None
     | Gray
     | Red
-    | Green;
+    | Green
+    | BoldRed
+    | BlackOnRed;
   let reset = "\x1b[0m";
   let gray = "\x1b[30;1m";
   let red = "\x1b[31m";
   let green = "\x1b[32m";
+  let boldRed = "\x1b[1;31m";
+  let blackOnRed = "\x1b[30;41m";
   let colorOfInt =
     fun
     | 0 => None
     | 1 => Gray
     | 2 => Red
     | 3 => Green
+    | 4 => BoldRed
+    | 5 => BlackOnRed
     | _ => raise(Outofrange);
   let stringOfColor =
     fun
     | None => reset
     | Gray => gray
     | Red => red
-    | Green => green;
+    | Green => green
+    | BoldRed => boldRed
+    | BlackOnRed => blackOnRed;
 };
 
 let charAtDefault = (default, str, i) =>
