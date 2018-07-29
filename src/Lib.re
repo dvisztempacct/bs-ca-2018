@@ -172,3 +172,7 @@ module Slice = {
 
   let get = s => s.a |> Belt.Array.slice(~offset=s.start, ~len=s.len);
 };
+
+module Infix = {
+  let (/^) = divRoundUp;
+};
