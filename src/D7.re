@@ -15,7 +15,7 @@ let calcCell = (x: Slice.t(cell), i) => {
 };
 
 /* draws a single line */
-let solidConeLog = (x: Slice.t(cell), c:C.t, i) => {
+let solidConeLog = (x: Slice.t(cell), c: C.t, i) => {
   let w = x.len;
   let fn = i => x |. Slice.getExn(i) |. charOfCell;
   let l = forRange(fn, i, w - i);
@@ -23,19 +23,25 @@ let solidConeLog = (x: Slice.t(cell), c:C.t, i) => {
   c |. C.putDefaultStrClipped(i, i, s);
 };
 
-let hollowConeLog = (x0: Slice.t(cell), x1: Slice.t(cell), c:C.t) => {
+let hollowConeLog = (x0: Slice.t(cell), x1: Slice.t(cell), c: C.t) => {
   let w = x0.len;
   let half = divRoundUp(w, 2);
   let row = i => {
-    oddSelect(i, x0, x1) |. Slice.getExn(i) |. charOfCell |> C.putDefaultStrClipped(c, i, i);
+    oddSelect(i, x0, x1)
+    |. Slice.getExn(i)
+    |. charOfCell
+    |> C.putDefaultStrClipped(c, i, i);
     if (w - i - 1 != i) {
-      oddSelect(i, x0, x1) |. Slice.getExn(w - i - 1) |. charOfCell |> C.putDefaultStrClipped(c, w - i - 1, i);
-    }
+      oddSelect(i, x0, x1)
+      |. Slice.getExn(w - i - 1)
+      |. charOfCell
+      |> C.putDefaultStrClipped(c, w - i - 1, i);
+    };
   };
   forRange(row, 0, half) |> ignore;
 };
 
-let rec bootCone = (x: Slice.t(cell), y: Slice.t(cell), c:C.t, i) => {
+let rec bootCone = (x: Slice.t(cell), y: Slice.t(cell), c: C.t, i) => {
   solidConeLog(x, c, i - 1);
   let w = x.len;
   let half = w / 2;
