@@ -124,6 +124,7 @@ module Slice = {
     start: int,
     len: int,
   };
+  let length = s => s.len;
   let make = (a, start, len) => {
     if (0 > start || 0 > len || Array.length(a) < start + len) {
       raise(Outofrange);
@@ -175,4 +176,5 @@ module Slice = {
 
 module Infix = {
   let (/^) = divRoundUp;
+  let (/-) = (n, d) => n / d - (n mod d == 0 ? 1 : 0);
 };

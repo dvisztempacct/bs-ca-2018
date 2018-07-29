@@ -11,19 +11,25 @@ module type Impl = {
 module Make = (Impl: Impl) => {
   include Impl;
   type t = {
-    w: int,
-    h: int,
     x: Slice.t(cell),
+    xOffset: int,
+    yOffset: int,
+    width: int,
+    h: int,
+    stride: int,
   };
   let init = (w, h, f) => {
-    w,
+    width: w,
     h,
     x: Array.init(w * h, f) |. Slice.makeWhole,
+    xOffset: 0,
+    yOffset: 0,
+    stride: w,
   };
   let make = (w, h) => init(w, h, _ => defaultCell);
   let devNull = [|defaultCell|] |. Slice.makeWhole;
-  let calcIndex = (c, x, y) => c.w * y + x;
-  let boundsCheck = (c, x, y) => 0 <= x && x < c.w && 0 <= y && y < c.h;
+  let calcIndex = (c, x, y) => c.stride * (y + c.yOffset) + x + c.xOffset;
+  let boundsCheck = (c, x, y) => 0 <= x && x < c.width && 0 <= y && y < c.h;
   let getCellOpt = (c, x, y) =>
     boundsCheck(c, x, y) ? Slice.getOpt(c.x, calcIndex(c, x, y)) : None;
   let getCellExn = (c, x, y) =>
@@ -45,7 +51,7 @@ module Make = (Impl: Impl) => {
     };
   let putHomoStrClipped = (c, x, y, cell, v) => {
     let len = v |> String.length;
-    let max = Js.Math.min_int(len, c.w - x);
+    let max = Js.Math.min_int(len, c.width - x);
     for (i in 0 to max - 1) {
       let v = combineCellWithChar(cell, v.[i]);
       putBool(c, x + i, y, v) |> ignore;
@@ -53,10 +59,20 @@ module Make = (Impl: Impl) => {
   };
   let putDefaultStrClipped = (c, x, y, v) =>
     putHomoStrClipped(c, x, y, defaultCell, v);
+  /* XXX TODO crop */
   let stringOfCanvas = c =>
-    Slice.chunksByLen(c.x, c.w)
+    Slice.chunksByLen(c.x, c.width)
     |> Array.map(rowToString)
     |> Js.Array.joinWith("\n");
+  let sliceExn = (c, x, y, w, h) => {
+    let x = x + c.xOffset;
+    let y = y + c.yOffset;
+    if (boundsCheck(c, x, y) || boundsCheck(c, x + w - 1, y + h - 1)) {
+      {...c, xOffset: x, yOffset: y, width: w, h};
+    } else {
+      raise(Lib.Outofrange);
+    };
+  };
 };
 
 module PlainTextCanvas =
@@ -95,7 +111,7 @@ module AnsiColorCanvas =
  * when one canvas has a space, and red when they differ */
 let specialDiff: (PlainTextCanvas.t, PlainTextCanvas.t) => AnsiColorCanvas.t =
   (a, b) => {
-    let w = Js.Math.max_int(a.w, b.w);
+    let w = Js.Math.max_int(a.width, b.width);
     let h = Js.Math.max_int(a.h, b.h);
     let c = AnsiColorCanvas.make(w * 2, h);
     for (y in 0 to h - 1) {
